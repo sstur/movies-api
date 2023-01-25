@@ -3,6 +3,7 @@ import { Record, String } from 'runtypes';
 
 import { db } from '../db';
 import { defineRoutes } from '../server';
+import type { Comment } from '../types/types';
 
 const NewCommentBody = Record({
   content: String,
@@ -15,7 +16,14 @@ export default defineRoutes((app) => [
     if (!movie) {
       return;
     }
-    return await db.Comment.findWhere((comment) => comment.movie === movie.id);
+    const comments: Array<Comment> = [];
+    for (const commentId of movie.comments) {
+      const comment = await db.Comment.getById(commentId);
+      if (comment) {
+        comments.push(comment);
+      }
+    }
+    return comments;
   }),
 
   app.post('/movies/:id/comment', async (request) => {
@@ -34,11 +42,14 @@ export default defineRoutes((app) => [
     }
     const { content } = body;
     const now = new Date().toISOString();
-    return await db.Comment.insert({
+    const comment = await db.Comment.insert({
       content,
       movie: movie.id,
       author: user.id,
       createdAt: now,
     });
+    movie.comments.push(comment.id);
+    await db.Movie.update(movie.id, movie);
+    return comment;
   }),
 ]);
