@@ -38,7 +38,10 @@ const getMovies = memoize(async (): Promise<Array<Movie>> => {
       if (result.original_language === 'en' && !result.adult) {
         const movie = toMovie(result);
         const existing = await db.Movie.getById(movie.id);
-        if (!existing) {
+        if (existing) {
+          movie.favoritedBy = existing.favoritedBy;
+          movie.comments = existing.comments;
+        } else {
           await db.Movie.insert(movie);
         }
         results.push(movie);
