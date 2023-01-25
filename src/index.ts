@@ -1,6 +1,7 @@
 import './env';
 
 import express from 'express';
+import cors from 'cors';
 
 import * as handlers from './routes';
 import { attachRoutes } from './server';
@@ -10,6 +11,7 @@ const PORT = 4000;
 
 const app = express();
 app.disable('x-powered-by');
+app.use(cors());
 loadPlayground(app);
 
 const middleware = attachRoutes(...Object.values(handlers));
