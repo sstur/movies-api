@@ -5,9 +5,16 @@ import { defineRoutes } from '../server';
 
 export default defineRoutes((app) => [
   app.get('/movies/:id', async (request) => {
+    const user = await request.authenticate();
     const id = request.params.id;
     const movie = await db.Movie.getById(id);
-    return movie ?? undefined;
+    if (movie) {
+      return {
+        ...movie,
+        favoritedByViewer: user ? user.favorites.includes(movie.id) : false,
+      };
+    }
+    return undefined;
   }),
 
   app.post('/movies/:id/favorite', async (request) => {
