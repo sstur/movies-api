@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@nbit/express": "^0.7.0",
+    "dotenv": "^16.0.3",
     "express": "^4.18.1",
     "graphql": "^16.6.0",
     "http-proxy-middleware": "^2.0.6",

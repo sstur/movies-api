@@ -1,3 +1,5 @@
+import './env';
+
 import express from 'express';
 
 import * as handlers from './routes';
