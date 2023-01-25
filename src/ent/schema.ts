@@ -2,10 +2,11 @@ import { String } from 'runtypes';
 
 import { defineSchema, defineModel, ref } from './helpers';
 
-const User = defineModel({
-  dbKey: 'users',
+const Movie = defineModel({
+  dbKey: 'movies',
   fields: {
-    name: String,
+    id: String,
+    title: String,
   },
   hasMany: {
     sessions: ref('session'),
@@ -20,7 +21,19 @@ const Session = defineModel({
   belongsTo: { user: ref('user') },
 });
 
+const User = defineModel({
+  dbKey: 'users',
+  fields: {
+    id: String,
+    name: String,
+  },
+  hasMany: {
+    sessions: ref('session'),
+  },
+});
+
 export default defineSchema({
-  user: User,
+  movie: Movie,
   session: Session,
+  user: User,
 });
