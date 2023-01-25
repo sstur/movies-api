@@ -2,26 +2,25 @@ import { String } from 'runtypes';
 
 import { defineSchema, defineModel, ref } from './helpers';
 
-const Account = defineModel({
-  dbKey: 'accounts',
+const User = defineModel({
+  dbKey: 'users',
   fields: {
     name: String,
   },
   hasMany: {
-    users: ref('user'),
+    sessions: ref('session'),
   },
 });
 
-const User = defineModel({
-  dbKey: 'users',
+const Session = defineModel({
+  dbKey: 'sessions',
   fields: {
-    username: String,
+    id: String,
   },
-  indexes: { username: true },
-  belongsTo: { account: ref('account') },
+  belongsTo: { user: ref('user') },
 });
 
 export default defineSchema({
-  account: Account,
   user: User,
+  session: Session,
 });
