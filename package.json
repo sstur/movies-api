@@ -14,6 +14,7 @@
     "@nbit/express": "^0.7.0",
     "express": "^4.18.1",
     "graphql": "^16.6.0",
+    "http-proxy-middleware": "^2.0.6",
     "node-fetch": "^2.6.8",
     "runtypes": "^6.6.0",
     "sqlite": "^4.1.2",
