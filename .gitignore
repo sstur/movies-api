@@ -1,4 +1,5 @@
 /coverage
+/data
 /src/generated
 /lib
 /node_modules
