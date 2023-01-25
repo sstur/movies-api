@@ -32,6 +32,14 @@ export default defineRoutes((app) => [
     });
     const now = new Date().toISOString();
     const session = await db.Session.insert({ user: user.id, createdAt: now });
-    return { success: true, user, token: session.id };
+    return {
+      success: true,
+      user: {
+        id: user.id,
+        name,
+        username,
+      },
+      token: session.id,
+    };
   }),
 ]);
