@@ -75,23 +75,30 @@ function toMovie(input: ApiMovieListItem): Movie {
   };
 }
 
+export function toMovieListItem(movie: Movie, favoritedByViewer: boolean) {
+  return {
+    id: movie.id,
+    title: movie.title,
+    release_date: movie.release_date,
+    popularity: movie.popularity,
+    vote_average: movie.vote_average,
+    poster_path: movie.poster_path,
+    backdrop_path: movie.backdrop_path,
+    favoritedCount: movie.favoritedBy.length,
+    favoritedByViewer,
+    commentCount: movie.comments.length,
+  };
+}
+
 export default defineRoutes((app) => [
   app.get('/movies', async (request) => {
     const user = await request.authenticate();
     const movies = await getMovies();
     return movies.map((movie) => {
-      return {
-        id: movie.id,
-        title: movie.title,
-        release_date: movie.release_date,
-        popularity: movie.popularity,
-        vote_average: movie.vote_average,
-        poster_path: movie.poster_path,
-        backdrop_path: movie.backdrop_path,
-        favoritedCount: movie.favoritedBy.length,
-        favoritedByViewer: user ? user.favorites.includes(movie.id) : false,
-        commentCount: movie.comments.length,
-      };
+      return toMovieListItem(
+        movie,
+        user ? user.favorites.includes(movie.id) : false,
+      );
     });
   }),
 ]);
