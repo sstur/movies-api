@@ -76,7 +76,22 @@ function toMovie(input: ApiMovieListItem): Movie {
 }
 
 export default defineRoutes((app) => [
-  app.get('/movies', async () => {
-    return await getMovies();
+  app.get('/movies', async (request) => {
+    const user = await request.authenticate();
+    const movies = await getMovies();
+    return movies.map((movie) => {
+      return {
+        id: movie.id,
+        title: movie.title,
+        release_date: movie.release_date,
+        popularity: movie.popularity,
+        vote_average: movie.vote_average,
+        poster_path: movie.poster_path,
+        backdrop_path: movie.backdrop_path,
+        favoritedCount: movie.favoritedBy.length,
+        favoritedByViewer: user ? user.favorites.includes(movie.id) : false,
+        commentCount: movie.comments.length,
+      };
+    });
   }),
 ]);
