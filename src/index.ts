@@ -1,16 +1,15 @@
 import express from 'express';
 
-import { attachHandlers } from './server';
+import * as handlers from './routes';
+import { attachRoutes } from './server';
 
 const PORT = 3000;
 
 const app = express();
+app.disable('x-powered-by');
 
-attachHandlers(app);
-
-app.get('/', (request, response) => {
-  response.send(`<h1>Hello world!</h1>`);
-});
+const middleware = attachRoutes(...Object.values(handlers));
+app.use(middleware);
 
 app.listen(PORT, () => {
   // eslint-disable-next-line no-console

@@ -615,6 +615,11 @@
     semver "^7.3.5"
     tar "^6.1.11"
 
+"@nbit/express@^0.7.0":
+  version "0.7.0"
+  resolved "https://registry.yarnpkg.com/@nbit/express/-/express-0.7.0.tgz#01baa63d6cea87855de81f87f423484995129c21"
+  integrity sha512-OPVoI454mrR6WqjMVSOHNpInH0MUo8qZogIyjOyUmVpo08E8poispYfHBkPTibf6rZ2KwMdTHQHRBof8UngWAQ==
+
 "@nodelib/fs.scandir@2.1.5":
   version "2.1.5"
   resolved "https://registry.yarnpkg.com/@nodelib/fs.scandir/-/fs.scandir-2.1.5.tgz#7619c2eb21b25483f6d167548b4cfd5a7488c3d5"

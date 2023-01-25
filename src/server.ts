@@ -1,5 +1,13 @@
-import type { Application } from 'express';
+import { createApplication } from '@nbit/express';
 
-export function attachHandlers(app: Application) {
-  app.disable('x-powered-by');
-}
+const { defineRoutes, attachRoutes } = createApplication({
+  // getContext: (request) => ({
+  //   authenticate: async () => {
+  //     const auth = request.headers.get('authorization') ?? '';
+  //     const token = auth.replace(/^Bearer /i, '');
+  //     // TODO
+  //   },
+  // }),
+});
+
+export { defineRoutes, attachRoutes };
