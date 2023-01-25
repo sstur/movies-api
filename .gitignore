@@ -1,4 +1,5 @@
 /coverage
+/src/generated
 /lib
 /node_modules
 .env
