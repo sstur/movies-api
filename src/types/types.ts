@@ -26,20 +26,6 @@ export type Movie = {
   comments: Array<string>;
 };
 
-export type MovieListItem = {
-  id: string;
-  title: string;
-  overview: string;
-  release_date: string;
-  genres: Array<string>;
-  popularity: number;
-  vote_average: number;
-  poster_path: string;
-  backdrop_path: string;
-  favoritedCount: number;
-  commentCount: number;
-};
-
 export type Comment = {
   id: string;
   movie: string;

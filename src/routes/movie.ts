@@ -1,3 +1,4 @@
+import { HttpError } from '@nbit/express';
 import fetch from 'node-fetch';
 
 import { db } from '../db';
@@ -70,6 +71,29 @@ export default defineRoutes((app) => [
     );
     movie.comments = comments.map(({ id }) => id);
     return movie;
+  }),
+
+  app.post('/movies/:id/favorite', async (request) => {
+    const user = await request.authenticate();
+    if (!user) {
+      throw new HttpError({ status: 401 });
+    }
+    const id = request.params.id;
+    const movie = await db.Movie.getById(id);
+    if (!movie) {
+      throw new HttpError({ status: 404 });
+    }
+    const isLiked = user.favorites.includes(movie.id);
+    if (isLiked) {
+      user.favorites = user.favorites.filter((id) => id !== movie.id);
+      movie.favoritedBy = movie.favoritedBy.filter((id) => id !== user.id);
+    } else {
+      user.favorites.push(movie.id);
+      movie.favoritedBy.push(user.id);
+    }
+    await db.User.update(user.id, { favorites: user.favorites });
+    await db.Movie.update(movie.id, { favoritedBy: movie.favoritedBy });
+    return { isLiked: !isLiked };
   }),
 ]);
 

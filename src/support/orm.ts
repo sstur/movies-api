@@ -29,7 +29,8 @@ function createModel<T extends { id: string }>(name: string): Model<T> {
   const store = getStore();
   const self = {
     insert: async (item: Expand<Omit<T, 'id'>>): Promise<T> => {
-      const id = createId();
+      const existingId = toString(Object(item).id);
+      const id = existingId ?? createId();
       const record: T = { id, ...item } as any;
       const idList = toArray(await store.get(name));
       idList.push(id);
@@ -87,4 +88,8 @@ function toArray(input: unknown): Array<string> {
 
 function toKey(name: string, id: string) {
   return `${name}/${id}`;
+}
+
+function toString(input: unknown): string | undefined {
+  return typeof input === 'string' ? input : undefined;
 }

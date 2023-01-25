@@ -1,9 +1,10 @@
 import fetch from 'node-fetch';
 
+import { db } from '../db';
 import { defineRoutes } from '../server';
 import { TMDB_API_KEY } from '../support/constants';
 import { memoize } from '../support/memoize';
-import type { MovieListItem } from '../types/types';
+import type { Movie } from '../types/types';
 
 type ApiMovieListItem = {
   id: number;
@@ -21,7 +22,7 @@ type ApiMovieListItem = {
 
 const maxPages = 6;
 
-const getMovies = memoize(async (): Promise<Array<MovieListItem>> => {
+const getMovies = memoize(async (): Promise<Array<Movie>> => {
   const promises = Array.from({ length: maxPages }).map(async (_, i) => {
     const page = i + 1;
     const url = new URL('https://api.themoviedb.org/3/movie/popular');
@@ -31,18 +32,23 @@ const getMovies = memoize(async (): Promise<Array<MovieListItem>> => {
     return await response.json();
   });
   const pages = await Promise.all(promises);
-  const results: Array<MovieListItem> = [];
+  const results: Array<Movie> = [];
   for (const page of pages) {
     for (const result of page.results as Array<ApiMovieListItem>) {
       if (result.original_language === 'en' && !result.adult) {
-        results.push(toMovieListItem(result));
+        const movie = toMovie(result);
+        const existing = await db.Movie.getById(movie.id);
+        if (!existing) {
+          await db.Movie.insert(movie);
+        }
+        results.push(movie);
       }
     }
   }
   return results;
 });
 
-function toMovieListItem(input: ApiMovieListItem): MovieListItem {
+function toMovie(input: ApiMovieListItem): Movie {
   const {
     id,
     title,
@@ -64,8 +70,8 @@ function toMovieListItem(input: ApiMovieListItem): MovieListItem {
     vote_average: vote_average,
     poster_path: poster_path,
     backdrop_path: backdrop_path,
-    favoritedCount: 0,
-    commentCount: 0,
+    favoritedBy: [],
+    comments: [],
   };
 }
 
