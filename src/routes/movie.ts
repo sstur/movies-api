@@ -20,8 +20,8 @@ export default defineRoutes((app) => [
     if (!movie) {
       throw new HttpError({ status: 404 });
     }
-    const isLiked = user.favorites.includes(movie.id);
-    if (isLiked) {
+    const isFavorited = user.favorites.includes(movie.id);
+    if (isFavorited) {
       user.favorites = user.favorites.filter((id) => id !== movie.id);
       movie.favoritedBy = movie.favoritedBy.filter((id) => id !== user.id);
     } else {
@@ -30,6 +30,6 @@ export default defineRoutes((app) => [
     }
     await db.User.update(user.id, { favorites: user.favorites });
     await db.Movie.update(movie.id, { favoritedBy: movie.favoritedBy });
-    return { isLiked: !isLiked };
+    return { isFavorited: !isFavorited };
   }),
 ]);
