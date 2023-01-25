@@ -3,7 +3,7 @@ import { createId } from './createId';
 import { getStore } from './kvstore';
 
 type Model<T extends { id: string }> = {
-  insert: (item: Omit<T, 'id'>) => Promise<T>;
+  insert: (item: Expand<Omit<T, 'id'>>) => Promise<T>;
   update: (id: string, updates: Partial<T>) => Promise<T | null>;
   delete: (id: string) => Promise<boolean>;
   getById: (id: string) => Promise<T | null>;
@@ -28,7 +28,7 @@ export function fromSchema<T extends Record<string, { id: string }>>(schema: {
 function createModel<T extends { id: string }>(name: string): Model<T> {
   const store = getStore();
   const self = {
-    insert: async (item: Omit<T, 'id'>): Promise<T> => {
+    insert: async (item: Expand<Omit<T, 'id'>>): Promise<T> => {
       const id = createId();
       const record: T = { id, ...item } as any;
       const idList = toArray(await store.get(name));
