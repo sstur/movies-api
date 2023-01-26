@@ -3,7 +3,7 @@ import { Record, String } from 'runtypes';
 
 import { db } from '../db';
 import { defineRoutes } from '../server';
-import type { Comment } from '../types/types';
+import type { User } from '../types/types';
 
 const NewCommentBody = Record({
   content: String,
@@ -16,11 +16,22 @@ export default defineRoutes((app) => [
     if (!movie) {
       return;
     }
-    const comments: Array<Comment> = [];
+    const users = await db.User.getAll();
+    const userMap = new Map<string, User>();
+    for (const user of users) {
+      userMap.set(user.id, user);
+    }
+    const comments = [];
     for (const commentId of movie.comments) {
       const comment = await db.Comment.getById(commentId);
       if (comment) {
-        comments.push(comment);
+        const user = userMap.get(comment.author);
+        if (user) {
+          comments.push({
+            ...comment,
+            author: { id: user.id, name: user.name },
+          });
+        }
       }
     }
     return comments;
