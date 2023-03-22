@@ -77,4 +77,18 @@ export default defineRoutes((app) => [
     await db.Movie.update(movie.id, { favorited_by: movie.favorited_by });
     return { isFavorited: !isFavorited };
   }),
+
+  app.delete('/movies/:id', async (request) => {
+    const user = await request.authenticate();
+    if (!user) {
+      throw new HttpError({ status: 401 });
+    }
+    const id = parseInt(request.params.id, 10);
+    const movie = await db.Movie.getById(id);
+    if (!movie) {
+      throw new HttpError({ status: 404 });
+    }
+    await db.Movie.delete(movie.id);
+    return { success: true };
+  }),
 ]);
