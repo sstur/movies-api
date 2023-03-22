@@ -31,6 +31,7 @@ export default defineRoutes((app) => [
   app.get('/movies', async (request) => {
     const user = await request.authenticate();
     const movies = await db.Movie.getAll();
+    movies.sort((a, b) => b.popularity - a.popularity);
     return movies.map((movie) => {
       return toMovieListItem(
         movie,
