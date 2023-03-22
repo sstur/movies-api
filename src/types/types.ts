@@ -1,40 +1,40 @@
 export type User = {
-  id: string;
+  id: number;
   name: string;
   username: string;
   password: string;
-  favorites: Array<string>;
+  favorites: Array<number>;
 };
 
 export type Session = {
-  id: string;
-  user: string;
+  id: number;
+  user: number;
   created_at: string;
 };
 
 export type Movie = {
-  id: string;
+  id: number;
   title: string;
   overview: string;
   release_date: string;
-  genre_ids: Array<string>;
+  genre_ids: Array<number>;
   popularity: number;
   vote_average: number;
   poster_path: string;
   backdrop_path: string;
-  favorited_by: Array<string>;
-  comments: Array<string>;
+  favorited_by: Array<number>;
+  comments: Array<number>;
 };
 
 export type Comment = {
-  id: string;
-  movie: string;
-  author: string;
+  id: number;
+  movie: number;
+  author: number;
   content: string;
   created_at: string;
 };
 
 export type Genre = {
-  id: string;
+  id: number;
   name: string;
 };

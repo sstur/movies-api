@@ -30,7 +30,7 @@ export default defineRoutes((app) => [
         name: user.name,
         username: user.username,
       },
-      token: session.id,
+      token: session.id.toString(36),
     };
   }),
 ]);

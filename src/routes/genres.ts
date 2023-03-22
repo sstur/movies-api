@@ -19,7 +19,7 @@ const getGenres = memoize(async (): Promise<Array<Genre>> => {
   const genres = data.genres as Array<ApiGenre>;
   const results: Array<Genre> = [];
   for (const { id, name } of genres) {
-    const genre: Genre = { id: 'g' + String(id), name };
+    const genre: Genre = { id, name };
     const existing = await db.Genre.getById(genre.id);
     if (!existing) {
       await db.Genre.insert(genre);

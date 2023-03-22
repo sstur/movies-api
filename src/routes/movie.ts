@@ -6,7 +6,7 @@ import { defineRoutes } from '../server';
 export default defineRoutes((app) => [
   app.get('/movies/:id', async (request) => {
     const user = await request.authenticate();
-    const id = request.params.id;
+    const id = parseInt(request.params.id, 10);
     const movie = await db.Movie.getById(id);
     if (movie) {
       return {
@@ -22,7 +22,7 @@ export default defineRoutes((app) => [
     if (!user) {
       throw new HttpError({ status: 401 });
     }
-    const id = request.params.id;
+    const id = parseInt(request.params.id, 10);
     const movie = await db.Movie.getById(id);
     if (!movie) {
       throw new HttpError({ status: 404 });

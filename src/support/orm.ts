@@ -1,21 +1,20 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { createId } from './createId';
 import { getStore } from './kvstore';
 
-type Model<T extends { id: string }> = {
+type Model<T extends { id: number }> = {
   insert: (item: Expand<Omit<T, 'id'>>) => Promise<T>;
-  update: (id: string, updates: Partial<T>) => Promise<T | null>;
-  delete: (id: string) => Promise<boolean>;
-  getById: (id: string) => Promise<T | null>;
+  update: (id: number, updates: Partial<T>) => Promise<T | null>;
+  delete: (id: number) => Promise<boolean>;
+  getById: (id: number) => Promise<T | null>;
   getAll: () => Promise<Array<T>>;
   findWhere: (fn: (item: T) => boolean) => Promise<Array<T>>;
 };
 
-export function Model<T extends { id: string }>() {
+export function Model<T extends { id: number }>() {
   return (name: string) => createModel<T>(name);
 }
 
-export function fromSchema<T extends Record<string, { id: string }>>(schema: {
+export function fromSchema<T extends Record<string, { id: number }>>(schema: {
   [K in keyof T]: (name: string) => Model<T[K]>;
 }) {
   const db: Record<string, any> = {};
@@ -25,11 +24,11 @@ export function fromSchema<T extends Record<string, { id: string }>>(schema: {
   return db as { [K in keyof T]: Model<T[K]> };
 }
 
-function createModel<T extends { id: string }>(name: string): Model<T> {
+function createModel<T extends { id: number }>(name: string): Model<T> {
   const store = getStore();
   const self = {
     insert: async (item: Expand<Omit<T, 'id'>>): Promise<T> => {
-      const existingId = toString(Object(item).id);
+      const existingId = toNumber(Object(item).id);
       const id = existingId ?? createId();
       const record: T = { id, ...item } as any;
       const idList = toArray(await store.get(name));
@@ -38,7 +37,7 @@ function createModel<T extends { id: string }>(name: string): Model<T> {
       await store.set(toKey(name, id), record);
       return record;
     },
-    update: async (id: string, updates: Partial<T>): Promise<T | null> => {
+    update: async (id: number, updates: Partial<T>): Promise<T | null> => {
       const key = toKey(name, id);
       const record: T | null = (await store.get(key)) as any;
       if (record) {
@@ -53,7 +52,7 @@ function createModel<T extends { id: string }>(name: string): Model<T> {
       }
       return null;
     },
-    delete: async (id: string): Promise<boolean> => {
+    delete: async (id: number): Promise<boolean> => {
       const idList = toArray(await store.get(name));
       await store.set(
         name,
@@ -61,7 +60,7 @@ function createModel<T extends { id: string }>(name: string): Model<T> {
       );
       return await store.del(toKey(name, id));
     },
-    getById: async (id: string): Promise<T | null> => {
+    getById: async (id: number): Promise<T | null> => {
       const record = await store.get(toKey(name, id));
       return record as any;
     },
@@ -82,14 +81,18 @@ function createModel<T extends { id: string }>(name: string): Model<T> {
   return self;
 }
 
-function toArray(input: unknown): Array<string> {
+function toArray(input: unknown): Array<number> {
   return Array.isArray(input) ? input : [];
 }
 
-function toKey(name: string, id: string) {
+function toKey(name: string, id: number) {
   return `${name}/${id}`;
 }
 
-function toString(input: unknown): string | undefined {
-  return typeof input === 'string' ? input : undefined;
+function toNumber(input: unknown): number | undefined {
+  return typeof input === 'number' ? input : undefined;
+}
+
+function createId() {
+  return Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
 }

@@ -9,7 +9,8 @@ const { defineRoutes, attachRoutes } = createApplication({
       const auth = request.headers.get('authorization') ?? '';
       const token = auth.replace(/^Bearer /i, '');
       if (token) {
-        const session = await db.Session.getById(token);
+        const sessionId = parseInt(token, 36);
+        const session = await db.Session.getById(sessionId);
         if (session) {
           const user = await db.User.getById(session.user);
           if (user) {

@@ -39,7 +39,7 @@ export default defineRoutes((app) => [
         name,
         username,
       },
-      token: session.id,
+      token: session.id.toString(36),
     };
   }),
 ]);

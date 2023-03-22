@@ -53,11 +53,11 @@ const getMovies = memoize(async (): Promise<Array<Movie>> => {
 
 function toMovie(input: ApiMovieListItem): Movie {
   return {
-    id: 'm' + String(input.id),
+    id: input.id,
     title: input.title,
     overview: input.overview,
     release_date: input.release_date,
-    genre_ids: input.genre_ids.map((id) => 'g' + String(id)),
+    genre_ids: input.genre_ids,
     popularity: input.popularity,
     vote_average: input.vote_average,
     poster_path: input.poster_path,
