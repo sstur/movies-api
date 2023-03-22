@@ -6,22 +6,33 @@ import cors from 'cors';
 import * as handlers from './routes';
 import { attachRoutes } from './server';
 import { loadPlayground } from './playground/loadPlayground';
+import { loadMoviesFromApi } from './api/Api';
 
 const PORT = 4000;
 
-const app = express();
-app.disable('x-powered-by');
-app.use(cors());
-loadPlayground(app);
+async function main() {
+  await loadMoviesFromApi();
 
-const middleware = attachRoutes(...Object.values(handlers));
-app.use(middleware);
+  const app = express();
+  app.disable('x-powered-by');
+  app.use(cors());
+  loadPlayground(app);
 
-app.get('/', (request, response) => {
-  response.send(`<p>Open the <a href="/playground">REST Playground</a></p>`);
-});
+  const middleware = attachRoutes(...Object.values(handlers));
+  app.use(middleware);
 
-app.listen(PORT, () => {
+  app.get('/', (request, response) => {
+    response.send(`<p>Open the <a href="/playground">REST Playground</a></p>`);
+  });
+
+  app.listen(PORT, () => {
+    // eslint-disable-next-line no-console
+    console.log(`Listening on http://localhost:${PORT}`);
+  });
+}
+
+main().catch((error) => {
   // eslint-disable-next-line no-console
-  console.log(`Listening on http://localhost:${PORT}`);
+  console.error(error);
+  process.exit(1);
 });
