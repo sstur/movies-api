@@ -4,6 +4,14 @@ import { db } from '../db';
 import { defineRoutes } from '../server';
 import type { Movie } from '../types/types';
 
+function toImageUrl(path: string) {
+  if (path.startsWith('/')) {
+    return `https://image.tmdb.org/t/p/w500` + path;
+  } else {
+    return path;
+  }
+}
+
 export function toMovieListItem(movie: Movie, favoritedByViewer: boolean) {
   return {
     id: movie.id,
@@ -11,8 +19,8 @@ export function toMovieListItem(movie: Movie, favoritedByViewer: boolean) {
     release_date: movie.release_date,
     popularity: movie.popularity,
     vote_average: movie.vote_average,
-    poster_path: movie.poster_path,
-    backdrop_path: movie.backdrop_path,
+    poster_path: toImageUrl(movie.poster_path),
+    backdrop_path: toImageUrl(movie.backdrop_path),
     favorited_count: movie.favorited_by.length,
     favorited_by_viewer: favoritedByViewer,
     comment_count: movie.comments.length,
@@ -38,6 +46,8 @@ export default defineRoutes((app) => [
     if (movie) {
       return {
         ...movie,
+        poster_path: toImageUrl(movie.poster_path),
+        backdrop_path: toImageUrl(movie.backdrop_path),
         favorited_by_viewer: user ? user.favorites.includes(movie.id) : false,
       };
     }
