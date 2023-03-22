@@ -57,7 +57,7 @@ export default defineRoutes((app) => [
       content,
       movie: movie.id,
       author: user.id,
-      createdAt: now,
+      created_at: now,
     });
     movie.comments.push(comment.id);
     await db.Movie.update(movie.id, movie);

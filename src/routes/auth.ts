@@ -22,7 +22,7 @@ export default defineRoutes((app) => [
       return Response.json({ success: false }, { status: 401 });
     }
     const now = new Date().toISOString();
-    const session = await db.Session.insert({ user: user.id, createdAt: now });
+    const session = await db.Session.insert({ user: user.id, created_at: now });
     return {
       success: true,
       user: {

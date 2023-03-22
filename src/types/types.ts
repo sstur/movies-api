@@ -9,7 +9,7 @@ export type User = {
 export type Session = {
   id: string;
   user: string;
-  createdAt: string;
+  created_at: string;
 };
 
 export type Movie = {
@@ -17,12 +17,12 @@ export type Movie = {
   title: string;
   overview: string;
   release_date: string;
-  genres: Array<string>;
+  genre_ids: Array<string>;
   popularity: number;
   vote_average: number;
   poster_path: string;
   backdrop_path: string;
-  favoritedBy: Array<string>;
+  favorited_by: Array<string>;
   comments: Array<string>;
 };
 
@@ -31,7 +31,7 @@ export type Comment = {
   movie: string;
   author: string;
   content: string;
-  createdAt: string;
+  created_at: string;
 };
 
 export type Genre = {

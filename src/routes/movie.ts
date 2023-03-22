@@ -11,7 +11,7 @@ export default defineRoutes((app) => [
     if (movie) {
       return {
         ...movie,
-        favoritedByViewer: user ? user.favorites.includes(movie.id) : false,
+        favorited_by_viewer: user ? user.favorites.includes(movie.id) : false,
       };
     }
     return undefined;
@@ -30,13 +30,13 @@ export default defineRoutes((app) => [
     const isFavorited = user.favorites.includes(movie.id);
     if (isFavorited) {
       user.favorites = user.favorites.filter((id) => id !== movie.id);
-      movie.favoritedBy = movie.favoritedBy.filter((id) => id !== user.id);
+      movie.favorited_by = movie.favorited_by.filter((id) => id !== user.id);
     } else {
       user.favorites.push(movie.id);
-      movie.favoritedBy.push(user.id);
+      movie.favorited_by.push(user.id);
     }
     await db.User.update(user.id, { favorites: user.favorites });
-    await db.Movie.update(movie.id, { favoritedBy: movie.favoritedBy });
+    await db.Movie.update(movie.id, { favorited_by: movie.favorited_by });
     return { isFavorited: !isFavorited };
   }),
 ]);

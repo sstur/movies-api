@@ -39,7 +39,7 @@ const getMovies = memoize(async (): Promise<Array<Movie>> => {
         const movie = toMovie(result);
         const existing = await db.Movie.getById(movie.id);
         if (existing) {
-          movie.favoritedBy = existing.favoritedBy;
+          movie.favorited_by = existing.favorited_by;
           movie.comments = existing.comments;
         } else {
           await db.Movie.insert(movie);
@@ -52,28 +52,17 @@ const getMovies = memoize(async (): Promise<Array<Movie>> => {
 });
 
 function toMovie(input: ApiMovieListItem): Movie {
-  const {
-    id,
-    title,
-    overview,
-    release_date,
-    genre_ids,
-    popularity,
-    vote_average,
-    poster_path,
-    backdrop_path,
-  } = input;
   return {
-    id: 'm' + String(id),
-    title: title,
-    overview: overview,
-    release_date: release_date,
-    genres: genre_ids.map((id) => 'g' + String(id)),
-    popularity: popularity,
-    vote_average: vote_average,
-    poster_path: poster_path,
-    backdrop_path: backdrop_path,
-    favoritedBy: [],
+    id: 'm' + String(input.id),
+    title: input.title,
+    overview: input.overview,
+    release_date: input.release_date,
+    genre_ids: input.genre_ids.map((id) => 'g' + String(id)),
+    popularity: input.popularity,
+    vote_average: input.vote_average,
+    poster_path: input.poster_path,
+    backdrop_path: input.backdrop_path,
+    favorited_by: [],
     comments: [],
   };
 }
@@ -87,9 +76,9 @@ export function toMovieListItem(movie: Movie, favoritedByViewer: boolean) {
     vote_average: movie.vote_average,
     poster_path: movie.poster_path,
     backdrop_path: movie.backdrop_path,
-    favoritedCount: movie.favoritedBy.length,
-    favoritedByViewer,
-    commentCount: movie.comments.length,
+    favorited_count: movie.favorited_by.length,
+    favorited_by_viewer: favoritedByViewer,
+    comment_count: movie.comments.length,
   };
 }
 
