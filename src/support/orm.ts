@@ -6,6 +6,7 @@ type Model<T extends { id: number }> = {
   update: (id: number, updates: Partial<T>) => Promise<T | null>;
   delete: (id: number) => Promise<boolean>;
   getById: (id: number) => Promise<T | null>;
+  getList: () => Promise<Array<number>>;
   getAll: () => Promise<Array<T>>;
   findWhere: (fn: (item: T) => boolean) => Promise<Array<T>>;
 };
@@ -31,7 +32,7 @@ function createModel<T extends { id: number }>(name: string): Model<T> {
       const existingId = toNumber(Object(item).id);
       const id = existingId ?? createId();
       const record: T = { id, ...item } as any;
-      const idList = toArray(await store.get(name));
+      const idList = await self.getList();
       idList.push(id);
       await store.set(name, idList);
       await store.set(toKey(name, id), record);
@@ -53,7 +54,7 @@ function createModel<T extends { id: number }>(name: string): Model<T> {
       return null;
     },
     delete: async (id: number): Promise<boolean> => {
-      const idList = toArray(await store.get(name));
+      const idList = await self.getList();
       await store.set(
         name,
         idList.filter((n) => n !== id),
@@ -64,8 +65,11 @@ function createModel<T extends { id: number }>(name: string): Model<T> {
       const record = await store.get(toKey(name, id));
       return record as any;
     },
+    getList: async (): Promise<Array<number>> => {
+      return toArray(await store.get(name));
+    },
     getAll: async (): Promise<Array<T>> => {
-      const idList = toArray(await store.get(name));
+      const idList = await self.getList();
       const results: Array<T> = [];
       for (const id of idList) {
         const record = await store.get(toKey(name, id));
