@@ -22,7 +22,7 @@ type ApiMovieListItem = {
 
 const maxPages = 6;
 
-const getMoviesFromApi = memoize(async () => {
+const loadMoviesFromApi = memoize(async () => {
   const promises = Array.from({ length: maxPages }).map(async (_, i) => {
     const page = i + 1;
     const url = new URL('https://api.themoviedb.org/3/movie/popular');
@@ -41,24 +41,13 @@ const getMoviesFromApi = memoize(async () => {
       }
     }
   }
-  return results;
-});
-
-async function getMovies() {
-  const results: Array<Movie> = [];
-  const movies = await getMoviesFromApi();
-  for (const movie of movies) {
-    const existing = await db.Movie.getById(movie.id);
-    if (existing) {
-      movie.favorited_by = existing.favorited_by;
-      movie.comments = existing.comments;
-    } else {
+  const existing = new Set(await db.Movie.getList());
+  for (const movie of results) {
+    if (!existing.has(movie.id)) {
       await db.Movie.insert(movie);
     }
-    results.push(movie);
   }
-  return results;
-}
+});
 
 function toMovie(input: ApiMovieListItem): Movie {
   return {
@@ -93,8 +82,9 @@ export function toMovieListItem(movie: Movie, favoritedByViewer: boolean) {
 
 export default defineRoutes((app) => [
   app.get('/movies', async (request) => {
+    await loadMoviesFromApi();
     const user = await request.authenticate();
-    const movies = await getMovies();
+    const movies = await db.Movie.getAll();
     return movies.map((movie) => {
       return toMovieListItem(
         movie,
