@@ -39,9 +39,12 @@ export async function loadMoviesFromApi() {
       }
     }
   }
-  const existing = new Set(await db.Movie.getList());
+  const existingMovies = new Set(await db.Movie.getList());
   for (const movie of results) {
-    if (!existing.has(movie.id)) {
+    if (existingMovies.has(movie.id)) {
+      const { id, popularity, vote_average } = movie;
+      await db.Movie.update(id, { popularity, vote_average });
+    } else {
       await db.Movie.insert(movie);
     }
   }
